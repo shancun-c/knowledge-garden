@@ -1,0 +1,2 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {sampleState,schedule,stateSchema,descendants} from '../lib/model.ts';
+test('tree validation rejects cycles and dangling cards',()=>{const s=sampleState();assert.equal(stateSchema.safeParse(s).success,true);assert.ok(descendants(s.nodes,'learning').has('memory'));s.nodes[0].parent='memory';assert.equal(stateSchema.safeParse(s).success,false);s.nodes[0].parent=null;s.cards[0].node='missing';assert.equal(stateSchema.safeParse(s).success,false)});

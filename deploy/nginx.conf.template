@@ -1,0 +1,32 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name DOMAIN;
+    location /.well-known/acme-challenge/ { root /var/www/letsencrypt; }
+    location / { return 301 https://$host$request_uri; }
+}
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name DOMAIN;
+    ssl_certificate /etc/letsencrypt/live/DOMAIN/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/DOMAIN/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
+    client_max_body_size 9m;
+    auth_basic "Knowledge Garden";
+    auth_basic_user_file /etc/nginx/knowledge-garden.htpasswd;
+    location / {
+        proxy_pass http://127.0.0.1:4187;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Authorization "";
+        proxy_set_header x-knowledge-user $remote_user;
+        include /etc/nginx/knowledge-garden-proxy.conf;
+        proxy_read_timeout 90s;
+    }
+}

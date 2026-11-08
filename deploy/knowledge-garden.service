@@ -1,0 +1,23 @@
+[Unit]
+Description=Knowledge Garden personal learning workspace
+After=network.target
+
+[Service]
+Type=simple
+User=knowledge-garden
+Group=knowledge-garden
+WorkingDirectory=/srv/knowledge-garden/current
+EnvironmentFile=/etc/knowledge-garden/runtime.env
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/knowledge-garden
+ReadWritePaths=/srv/knowledge-garden/current/.next/cache
+
+[Install]
+WantedBy=multi-user.target
