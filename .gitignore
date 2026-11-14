@@ -55,3 +55,9 @@ yarn-error.log*
 *.p12
 *.pfx
 !/.env.example
+
+# Defense in depth: keep private material outside the checkout
+/private/
+/backups/
+*.tar.gz
+*.tgz

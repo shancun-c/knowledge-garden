@@ -1,3 +1,5 @@
+import {pairKey} from './knowledge-links.ts';
+import {InvalidStateChanges} from './state-changes.ts';
 import {applyStateChanges,type StateChanges} from './state-changes.ts';
 import {applyStudyPolicy} from './study-plan.ts';
 import { createHash, randomUUID } from 'node:crypto';
@@ -52,6 +54,13 @@ export class FileStore {
   }
 
   private prepareState(previous:KnowledgeState,state:KnowledgeState):KnowledgeState{
+      const oldCounts=new Map<string,number>(),counts=new Map<string,number>(),ids=new Set<string>();
+      for(const l of previous.links){const key=pairKey(l.from,l.to);oldCounts.set(key,(oldCounts.get(key)||0)+1)}
+      for(const l of state.links){
+        if(ids.has(l.id))throw new InvalidStateChanges('关联 ID 重复，未保存');ids.add(l.id);
+        const key=pairKey(l.from,l.to),count=(counts.get(key)||0)+1;counts.set(key,count);
+        if(count>Math.max(1,oldCounts.get(key)||0))throw new InvalidStateChanges('这两张卡片已有关联，请编辑已有关系');
+      }
       // Personal profiles are server-owned; ordinary state saves cannot erase/replace them.
       const oldCards=new Map(previous.cards.map(card=>[card.id,card]));
       // Older clients omit notes; only an explicit empty string clears them.

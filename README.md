@@ -4,12 +4,14 @@
 
 ## 功能
 
-- 知识树：主题、子节点、卡片归属与知识关联。
+- 知识树与图谱：主题、子节点、图谱 / 列表切换、搜索定位、缩放拖动、手动关联与关联阅读。
 - 卡片管理：搜索、标签、拖动排序、数学公式、图片与学习笔记。
 - 间隔复习：FSRS-6 调度、学习范围、撤销评分与个人参数优化。
 - AI 辅助：截图制卡、PDF 按页分批生成草稿、关联推荐和配图；审核后再保存。
 - 桌面和移动端学习界面、本地草稿恢复、显式保存与失败重试。
 - 按认证用户隔离的文件存储、修订冲突检查、JSON 导入与导出。
+
+知识图谱的范围、手动关联和 AI 建议限制见 [知识网络说明](docs/knowledge-network.md)。
 
 ## 技术与运行条件
 
@@ -23,15 +25,22 @@ Next.js 16、React 19、TypeScript、Tailwind CSS 4、ts-fsrs。使用 Node.js 2
 git clone https://github.com/shancun-c/knowledge-garden.git
 cd knowledge-garden
 npm ci
-cp .env.example .env.local
-# 编辑 .env.local，设置自己的随机代理密钥和访问地址
+mkdir -p ../private/knowledge-garden
+chmod 700 ../private/knowledge-garden
+# 仅首次创建；已有配置时不要覆盖
+cp -n .env.example ../private/knowledge-garden/runtime.env
+chmod 600 ../private/knowledge-garden/runtime.env
+# 编辑 runtime.env，设置自己的随机代理密钥和访问地址
+set -a
+. ../private/knowledge-garden/runtime.env
+set +a
 npm run build:selfhost
 npm run start:selfhost
 ```
 
 应用监听 `127.0.0.1:4187`，必须通过可信认证反向代理使用。直接打开应用端口不会得到已登录身份。代理需完成 Basic Auth，覆盖 `x-knowledge-user`，并设置与应用环境一致的 `x-knowledge-proxy-secret`。不要向公网直接开放 Node 端口。
 
-完整认证、HTTPS、systemd、持久化与回滚说明见 [部署指南](deploy/README.md)，配置样例见 [Nginx 模板](deploy/nginx.conf.template) 和 [systemd 服务](deploy/knowledge-garden.service)。`.env.local` 用于本地 Next.js；systemd 部署使用指南中的独立环境文件。
+完整认证、HTTPS、systemd、持久化与回滚说明见 [部署指南](deploy/README.md)，配置样例见 [Nginx 模板](deploy/nginx.conf.template) 和 [systemd 服务](deploy/knowledge-garden.service)。本地配置和数据放在仓库外的 `../private/knowledge-garden/`；每次打开终端启动应用前加载上述环境文件。systemd 部署继续使用指南中的独立环境文件。
 
 ```bash
 node --experimental-strip-types --test tests/*.test.ts
@@ -54,6 +63,10 @@ npm run build:selfhost
 - `lib/`：卡片、调度、存储、AI 与 PDF 逻辑。
 - `tests/`：项目行为与回归测试。
 - `deploy/`：自托管部署说明及模板。
+
+## 开发与发布
+
+在同一个 GitHub 仓库中开发、检查、提交和发布，不再维护单独的公开副本。私有配置、运行数据和运维记录存放在仓库外。分支、验证和发布规则见 [开发与发布指南](docs/development.md)。
 
 ## 贡献与许可
 
