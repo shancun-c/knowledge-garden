@@ -1,3 +1,4 @@
+import {IllustrationError,illustrationProviderError} from './illustration-errors.ts';
 import {z} from 'zod';
 const coordinate=z.number().finite().min(0).max(1000);
 const color=z.string().regex(/^(#[0-9a-fA-F]{6}|none)$/);
@@ -50,10 +51,10 @@ const SVG_TEACHING_INSTRUCTIONS = `你是善于把抽象知识讲通俗的视觉
 
 export async function generateSvgScene(apiKey:string,model:string,front:string,back:string){
  const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:`Bearer ${apiKey}`,'Content-Type':'application/json'},body:JSON.stringify({model,store:false,instructions:SVG_TEACHING_INSTRUCTIONS,input:[{role:'user',content:[{type:'input_text',text:JSON.stringify({front,back})}]}],text:{format:{type:'json_schema',name:'teaching_svg_scene',strict:true,schema:{type:'object',properties:{title:{type:'string'},description:{type:'string'},elements:{type:'array',items:{type:'object',properties,required:Object.keys(properties),additionalProperties:false}}},required:['title','description','elements'],additionalProperties:false}}},max_output_tokens:12000}),signal:AbortSignal.timeout(80000)});
- if(!response.ok)throw Error(`SVG 生成失败（${response.status}），请检查文字模型权限或额度。`);
+ if(!response.ok)throw await illustrationProviderError(response);
  const result=await response.json() as {status:string;output?:{content?:{type:string;text?:string}[]}[]};
- if(result.status!=='completed')throw Error('SVG 生成未完成，请重试。');
+ if(result.status!=='completed')throw new IllustrationError('GENERATION_INCOMPLETE');
  const text=result.output?.flatMap(x=>x.content||[]).filter(x=>x.type==='output_text').map(x=>x.text).join('');
- if(!text)throw Error('模型未返回 SVG 图示，请重试。');
- return svgSceneSchema.parse(JSON.parse(text));
+ if(!text)throw new IllustrationError('GENERATION_INCOMPLETE');
+ try{const scene=svgSceneSchema.parse(JSON.parse(text));renderSvgIllustration(scene);return scene;}catch{throw new IllustrationError('INVALID_DIAGRAM');}
 }
