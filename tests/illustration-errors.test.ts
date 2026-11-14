@@ -40,3 +40,18 @@ test('SVG generation classifies malformed, incomplete and unsafe geometry before
  assert.deepEqual(await generateSvgScene('test-key','test-model','q','a'),scene);
  for(const code of ['GENERATION_INCOMPLETE','INVALID_DIAGRAM','INVALID_DIAGRAM'])await assert.rejects(generateSvgScene('test-key','test-model','q','a'),(e:unknown)=>e instanceof IllustrationError&&e.code===code);
 });
+
+
+test('quota type and exhausted credit code take precedence over HTTP 429 throttling',async()=>{
+ for(const errorBody of [
+  {type:'insufficient_quota',code:'credit_balance_exhausted'},
+  {type:'insufficient_quota',code:'unrecognized_quota_code'},
+  {code:'credit_balance_exhausted'},
+ ]){
+  const error=await illustrationProviderError(Response.json({error:{...errorBody,message:'private billing information'}},{status:429}));
+  const result=illustrationFailure(error,'generation');
+  assert.equal(result.body.code,'QUOTA_EXCEEDED');
+  assert.match(result.body.error,/额度不足/);
+  assert.doesNotMatch(result.body.error,/频繁|private/);
+ }
+});

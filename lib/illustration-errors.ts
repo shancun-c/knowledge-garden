@@ -30,12 +30,12 @@ export class IllustrationError extends Error {
 // Provider messages may contain credentials or request content. Only classify known codes;
 // never forward or log the raw provider response, message, or exception stack.
 export async function illustrationProviderError(response: Response): Promise<IllustrationError> {
-  let code: unknown;
-  try { const body = await response.json() as {error?: {code?: unknown}} | null; code = body?.error?.code; } catch { /* HTML/empty provider error */ }
+  let code: unknown, type: unknown;
+  try { const body = await response.json() as {error?: {code?: unknown; type?: unknown}} | null; code = body?.error?.code; type = body?.error?.type; } catch { /* HTML/empty provider error */ }
   const status = response.status;
   if (code === 'account_deactivated') return new IllustrationError('ACCOUNT_DEACTIVATED', status);
   if (code === 'invalid_api_key' || status === 401) return new IllustrationError('INVALID_API_KEY', status);
-  if (code === 'insufficient_quota' || code === 'billing_hard_limit_reached') return new IllustrationError('QUOTA_EXCEEDED', status);
+  if (code === 'insufficient_quota' || code === 'billing_hard_limit_reached' || code === 'credit_balance_exhausted' || type === 'insufficient_quota') return new IllustrationError('QUOTA_EXCEEDED', status);
   if (status === 429) return new IllustrationError('RATE_LIMITED', status);
   if (status === 403 || status === 404 || code === 'model_not_found') return new IllustrationError('MODEL_ACCESS_DENIED', status);
   return new IllustrationError('PROVIDER_UNAVAILABLE', status);
