@@ -207,3 +207,14 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #41
 @media(max-width:760px){.shell.network-shell{display:block}.network-shell>.sidebar{display:none}.network-shell>main{margin-left:0;width:100%}.network-shell .content{padding:18px 14px}.network-shell .topbar{height:48px;padding:0 16px}.network-shell .heading h1{font-size:22px}.network-shell .top-right>.avatar{display:none}.network-shell .network-upgrade{margin-top:20px}}
 .network-upgrade .network-filters label{margin:0}.graph-focus{white-space:nowrap}.graph-board svg{height:400px}.network-shell .heading{margin-bottom:16px}.network-shell .content{padding-top:24px}.network-upgrade .network-filters{margin:14px 0}.network-upgrade .section-head .hint{margin-bottom:4px}
 @media(max-width:760px){.network-shell .topbar{display:none}.network-shell .heading{display:none}.network-shell .content{padding-top:0}.network-shell .network-upgrade{margin-top:0;padding:14px}.network-upgrade .network-filters{gap:12px}.graph-toolbar{gap:10px;padding:10px 0}.graph-toolbar>label{font-size:11px}.graph-board svg{height:300px}.graph-controls{padding:10px}.network-upgrade .hint{font-size:12px}.graph-layout{margin-top:8px}}
+
+/* Stars remain separate from the card's reading and drag controls. */
+.star-button{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:6px 10px;border:1px solid #dce4d7;border-radius:8px;background:#fff;color:#586650;font-size:12px;white-space:nowrap}
+.star-button>span{font-size:19px;line-height:1}
+.star-button.is-starred{color:#805600;background:#fff8df;border-color:#d9bc62}
+.star-button:focus-visible{outline:2px solid #805600;outline-offset:3px}
+.star-button:disabled{opacity:.5;cursor:wait}
+.card-star-action{position:absolute;right:16px;top:14px;z-index:1}
+.card-grid .card-top{padding-right:90px;min-height:36px}
+.review>.star-button,.mobile-study-main>.star-button{margin:12px 0}
+.star-marker{color:#805600}

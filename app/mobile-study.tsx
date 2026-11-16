@@ -9,6 +9,7 @@ import StudyCard from './study-card';
 import type {PersonalProfile} from '../lib/fsrs-personalization';
 
 type Props = {
+  starButton:(card:Card)=>ReactNode;
   onNetwork:()=>void;
   undoAvailable:boolean;onUndo:()=>void;notesEditor:(card:Card)=>ReactNode; profile?:PersonalProfile; ready: boolean; busy: boolean; login: boolean; message: string;
   tools:ReactNode;waiting:ReactNode;saveLabel:string;current: Card | null | undefined; topic: string; remaining: number; done: number;
@@ -28,6 +29,7 @@ export default function MobileStudy(p: Props) {
         <details className="mobile-study-options"><summary>学习选项<span>限额 · 薄弱卡片 · 同步</span></summary>{p.tools}</details><section className="mobile-study-progress" aria-label="本轮学习进度"><div><h1>今日学习</h1><span>已评分 <b>{p.done}</b> 次 · 待学 {p.remaining} 张</span></div><progress max={total||1} value={p.done} aria-label="本轮学习进度"/></section>
         {p.undoAvailable&&<button className="secondary undo-review" disabled={p.busy} onClick={p.onUndo}>撤销上次评分（60 秒内）</button>}
         {p.current ? <>
+          {p.starButton(p.current)}
           <StudyCard className="mobile-study-card" key={p.current.id} revealed={p.revealed} disabled={p.busy} onFlip={p.onReveal}>
             <div className="mobile-study-topic">{p.topic || '知识卡片'}</div>
             <div className="reader-section-label">先尝试回忆</div><h2><MathText text={p.current.front}/></h2><CardImages images={p.current.images} side="front"/>

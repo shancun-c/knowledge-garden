@@ -71,7 +71,9 @@ export class FileStore {
         return card.comments===undefined?{...card,comments:previousComments}:card;
       });
       const withImages=withComments.map(card=>card.images===undefined&&oldCards.get(card.id)?.images?{...card,images:oldCards.get(card.id)!.images}:card);
-      return applyStudyPolicy(previous,{...state,cards:withImages,optimization:previous.optimization},Date.now());
+      // Missing means an older client; only explicit false removes a star.
+      const withStars=withImages.map(card=>card.starred===undefined&&oldCards.get(card.id)?.starred!==undefined?{...card,starred:oldCards.get(card.id)!.starred}:card);
+      return applyStudyPolicy(previous,{...state,cards:withStars,optimization:previous.optimization},Date.now());
   }
 
   mutate(owner:string, change:(previous:StoredState)=>KnowledgeState):Promise<StoredState>{

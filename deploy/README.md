@@ -100,3 +100,9 @@ Economic-curve requests now go through the configured text model (Responses stri
 Economic reference: OpenStax Principles of Economics 3e, §26.1, Figure 26.4: https://openstax.org/books/principles-economics-3e/pages/26-1-the-building-blocks-of-neoclassical-analysis . Card notation uses E₁/E₂/E₃ and Pf/P₁/P₂. Coordinates are schematic, not quantitative data.
 
 Validation: 33 Node tests, TypeScript check and standalone production build; browser-rendered image inspected for curve intersections, labels, arrows and Chinese text. This narrowly verified template does not guarantee correctness of other economic diagrams.
+
+## Card stars
+
+Optional `Card.starred` marks cards for focused organization. Omitted values mean unstarred for legacy data; explicit `false` removes a star. Saving an older client payload that omits the field preserves the existing stored value. Stars use the same revision-checked state writes and JSON exports, without changing card content, order or study scheduling. The library supports starred filtering alongside search and scope; details and desktop/mobile study support toggling, and the architecture list shows starred markers.
+
+Refresh open pages after deployment. Older server schemas may discard stars on subsequent writes, so prefer a forward fix after users begin starring cards. An application rollback must preserve current data and must not restore an old data snapshot over new learning records.
