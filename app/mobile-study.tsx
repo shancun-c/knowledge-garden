@@ -11,6 +11,7 @@ import type {PersonalProfile} from '../lib/fsrs-personalization';
 type Props = {
   starButton:(card:Card)=>ReactNode;
   onNetwork:()=>void;
+  onStarred:()=>void;
   undoAvailable:boolean;onUndo:()=>void;notesEditor:(card:Card)=>ReactNode; profile?:PersonalProfile; ready: boolean; busy: boolean; login: boolean; message: string;
   tools:ReactNode;waiting:ReactNode;saveLabel:string;current: Card | null | undefined; topic: string; remaining: number; done: number;
   revealed: boolean; hasCards: boolean;
@@ -21,7 +22,7 @@ export default function MobileStudy(p: Props) {
   const total = p.done + p.remaining;
   return <div className="mobile-study">
     <header className="mobile-study-header"><div><BookOpen size={21}/><strong>知序 <span>每日学习</span></strong></div><small role="status">{p.saveLabel}</small></header>
-    <main className="mobile-study-main"><button className="secondary mobile-network-entry" onClick={p.onNetwork}>探索知识图谱 →</button>
+    <main className="mobile-study-main"><button className="secondary mobile-starred-entry" onClick={p.onStarred}>★ 星标卡片 <span>{p.cards.filter(card=>card.starred).length}</span> →</button><button className="secondary mobile-network-entry" onClick={p.onNetwork}>探索知识图谱 →</button>
       {p.message && <div className="mobile-study-error" role="alert">{p.message}</div>}
       {!p.ready ? <div className="mobile-study-empty"><BookOpen size={32}/><h1>{p.login?'请先登录':'正在准备你的卡片'}</h1><p>{p.login?'登录后继续学习你的知识卡片。':'正在连接知识库，请稍候。'}</p>{(p.login||p.message)&&<a href="/">重新连接</a>}</div> : <>
         <StudyScopePicker nodes={p.nodes} cards={p.cards} scope={p.scope} disabled={p.busy} onChange={p.onScopeChange}/>
