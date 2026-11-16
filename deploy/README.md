@@ -108,3 +108,5 @@ Optional `Card.starred` marks cards for focused organization. Omitted values mea
 Refresh open pages after deployment. Older server schemas may discard stars on subsequent writes, so prefer a forward fix after users begin starring cards. An application rollback must preserve current data and must not restore an old data snapshot over new learning records.
 
 The dedicated starred library is available from the desktop sidebar and mobile study home, including its total count. The `#view=starred&node=all` link opens it directly and survives reload/history navigation. Its search and directory filters are independent of the ordinary card library; removing a star updates the dedicated list immediately.
+
+Card detail and study notes display every entry without a history-collapse control, ordered by creation time descending. Undated legacy notes appear last. Display sorting does not mutate the saved comments array or change timestamps; editing an existing note retains its original creation time. Note search previews prefer the newest matching note.

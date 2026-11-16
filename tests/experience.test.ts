@@ -17,3 +17,22 @@ test('draft keys isolate accounts and cards, and invalid local data never restor
  const editor={front:'问题',back:'答案',tags:'标签',node:'n',images:[]};assert.deepEqual(readDraft({getItem:()=>JSON.stringify(editor)},'x',editorDraftSchema),editor);
  assert.throws(()=>readDraft({getItem:()=>{throw Error('storage disabled')}},'x',noteDraftSchema));
 });
+
+test('notes display newest first, keep legacy last, and do not mutate stored order',()=>{
+ const c={...sampleState().cards[0],notes:'旧备注',comments:[
+  {id:'older',text:'旧思考',createdAt:100},
+  {id:'newest',text:'新思考',createdAt:300},
+  {id:'middle',text:'中间思考',createdAt:200},
+ ]};
+ const before=JSON.stringify(c);
+ assert.deepEqual(cardNotes(c).map(n=>n.id),['newest','middle','older','legacy']);
+ assert.equal(JSON.stringify(c),before);
+ assert.equal(matchingNote(c,'思考'),'新思考');
+});
+
+test('equal note timestamps retain stable order and empty cards have no notes',()=>{
+ const c={...sampleState().cards[0],comments:[{id:'a',text:'A',createdAt:100},{id:'b',text:'B',createdAt:100}]};
+ assert.deepEqual(cardNotes(c).map(n=>n.id),['a','b']);
+ assert.deepEqual(cardNotes(sampleState().cards[0]),[]);
+ assert.deepEqual(cardNotes({...c,notes:'旧备注',comments:[{id:'zero',text:'Z',createdAt:0}]}).map(n=>n.id),['zero','legacy']);
+});
